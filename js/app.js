@@ -61,21 +61,46 @@
     legend.appendChild(row);
   });
 
+  const MAP_MAX_ZOOM = 22; // overzoom past OSM/Esri native tiles (~19)
   const b = meta.bbox;
   const bounds = L.latLngBounds([b.swlat, b.swlng], [b.nelat, b.nelng]);
-  const map = L.map('map', { zoomControl: true, preferCanvas: true });
+  const map = L.map('map', {
+    zoomControl: true,
+    preferCanvas: true,
+    maxZoom: MAP_MAX_ZOOM,
+  });
   map.fitBounds(bounds.pad(0.08));
 
   const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
+    maxNativeZoom: 19,
+    maxZoom: MAP_MAX_ZOOM,
     attribution: '&copy; OpenStreetMap',
   });
   const esri = L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    { maxZoom: 19, attribution: 'Esri' }
+    {
+      maxNativeZoom: 19,
+      maxZoom: MAP_MAX_ZOOM,
+      attribution: 'Tiles &copy; Esri',
+    }
   );
+  const topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    maxNativeZoom: 17,
+    maxZoom: MAP_MAX_ZOOM,
+    attribution: '&copy; OpenStreetMap, SRTM | OpenTopoMap',
+  });
   osm.addTo(map);
-  L.control.layers({ OpenStreetMap: osm, 'Esri imagery': esri }, {}, { position: 'topright' }).addTo(map);
+  L.control
+    .layers(
+      {
+        OpenStreetMap: osm,
+        'Esri imagery': esri,
+        OpenTopoMap: topo,
+      },
+      {},
+      { position: 'topright' }
+    )
+    .addTo(map);
 
   const bboxRect = L.rectangle(bounds, {
     color: '#5eead4',
@@ -98,6 +123,9 @@
     showCoverageOnHover: false,
     maxClusterRadius: 42,
     spiderfyOnMaxZoom: true,
+    // Uncluster before overzoom so individual pins stay clickable at z 19–22
+    disableClusteringAtZoom: 19,
+    maxZoom: MAP_MAX_ZOOM,
   });
   let plainGroup = L.layerGroup();
   let centroidGroup = L.layerGroup();
@@ -245,7 +273,7 @@
     const pts = (useCentroids ? centroids : obsGeo).features.filter((f) => f.properties.name === name);
     if (pts.length) {
       const ll = pts.map((f) => [f.geometry.coordinates[1], f.geometry.coordinates[0]]);
-      map.fitBounds(L.latLngBounds(ll).pad(0.35), { maxZoom: 17 });
+      map.fitBounds(L.latLngBounds(ll).pad(0.35), { maxZoom: 21 });
     }
   });
 
