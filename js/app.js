@@ -140,6 +140,7 @@
   let centroidGroup = L.layerGroup();
   let useCluster = true;
   let useCentroids = false;
+  let speciesFilterName = null; // when set, map shows only this species
 
   // GPS / near-me state
   let lastUserPos = null; // { lat, lng, accuracy }
@@ -149,7 +150,31 @@
   let lastNearHits = []; // sorted within 50m
 
   function featureVisible(props) {
-    return !!enabled[props.category || 'other'];
+    if (!enabled[props.category || 'other']) return false;
+    if (speciesFilterName && props.name !== speciesFilterName) return false;
+    return true;
+  }
+
+  function setSpeciesFilter(name) {
+    speciesFilterName = name || null;
+    const bar = document.getElementById('species-filter-bar');
+    const label = document.getElementById('species-filter-name');
+    if (speciesFilterName) {
+      bar.hidden = false;
+      label.textContent = speciesFilterName;
+    } else {
+      bar.hidden = true;
+      label.textContent = '';
+    }
+    refreshLayers();
+    if (lastUserPos) renderNearResults(lastUserPos);
+  }
+
+  function clearSpeciesFilter() {
+    search.value = '';
+    results.hidden = true;
+    results.innerHTML = '';
+    setSpeciesFilter(null);
   }
 
   function haversineM(lat1, lon1, lat2, lon2) {
@@ -315,12 +340,14 @@
     showSpecies(name);
     results.hidden = true;
     search.value = name;
+    setSpeciesFilter(name);
     const pts = (useCentroids ? centroids : obsGeo).features.filter((f) => f.properties.name === name);
     if (pts.length) {
       const ll = pts.map((f) => [f.geometry.coordinates[1], f.geometry.coordinates[0]]);
       map.fitBounds(L.latLngBounds(ll).pad(0.35), { maxZoom: 21 });
     }
   });
+  document.getElementById('clear-species-filter').addEventListener('click', clearSpeciesFilter);
 
   // ——— Near me / GPS ———
   const locateBtn = document.getElementById('locate-btn');
