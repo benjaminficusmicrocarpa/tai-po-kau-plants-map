@@ -248,6 +248,11 @@ a { color: var(--accent); }
   color: var(--accent);
   font-weight: 600;
 }
+.locate-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
 .btn-locate {
   width: 100%;
   display: flex;
@@ -274,6 +279,22 @@ a { color: var(--accent); }
   color: #0c4a6e;
 }
 .btn-locate-icon { font-size: 1.25rem; line-height: 1; }
+.btn-stop-locate {
+  width: 100%;
+  min-height: 48px;
+  padding: .75rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(251,113,133,.45);
+  background: rgba(225,29,72,.14);
+  color: #fda4af;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-stop-locate:active { transform: scale(.98); }
+.btn-stop-locate:disabled { opacity: .45; cursor: default; }
 .locate-status {
   margin: .55rem 0 0;
   color: var(--muted);
@@ -370,11 +391,17 @@ a { color: var(--accent); }
 .ring-5 { background: rgba(94,234,212,.18); color: #5eead4; }
 .ring-20 { background: rgba(56,189,248,.18); color: #7dd3fc; }
 .ring-50 { background: rgba(167,139,250,.18); color: #c4b5fd; }
-.map-locate-fab {
+.map-locate-fabs {
   position: absolute;
   z-index: 600;
   left: 12px;
   bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  align-items: flex-start;
+}
+.map-locate-fab {
   min-height: 48px;
   padding: .7rem 1rem;
   border: 1px solid rgba(94,234,212,.45);
@@ -390,6 +417,23 @@ a { color: var(--accent); }
   -webkit-tap-highlight-color: transparent;
 }
 .map-locate-fab:active { transform: scale(.97); }
+.map-stop-fab {
+  min-height: 44px;
+  padding: .6rem .95rem;
+  border: 1px solid rgba(251,113,133,.5);
+  border-radius: 999px;
+  background: rgba(15,20,25,.92);
+  color: #fda4af;
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+  -webkit-tap-highlight-color: transparent;
+}
+.map-stop-fab:active { transform: scale(.97); }
+.map-stop-fab:disabled { opacity: .45; }
 .user-loc-dot {
   width: 18px; height: 18px; border-radius: 50%;
   background: #38bdf8;
@@ -402,5 +446,6 @@ a { color: var(--accent); }
   #map-wrap { order: 1; height: 42vh; }
   .map-legend { display: none; }
   .btn-locate { min-height: 56px; font-size: 1.1rem; }
+  .btn-stop-locate { min-height: 52px; font-size: 1.05rem; }
   .near-results { max-height: 360px; }
 }

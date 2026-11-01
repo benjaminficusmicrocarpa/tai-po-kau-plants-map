@@ -330,6 +330,37 @@
   const nearSummary = document.getElementById('near-summary');
   const nearResults = document.getElementById('near-results');
   const mapLocateBtn = document.getElementById('map-locate-btn');
+  const stopLocateBtn = document.getElementById('stop-locate-btn');
+  const mapStopBtn = document.getElementById('map-stop-btn');
+
+  function setWatchingUI(watching) {
+    locateBtn.classList.toggle('watching', watching);
+    stopLocateBtn.hidden = !watching;
+    stopLocateBtn.disabled = !watching;
+    mapStopBtn.hidden = !watching;
+    mapStopBtn.disabled = !watching;
+    if (watching) {
+      locateBtnLabel.textContent = 'Refresh location';
+      mapLocateBtn.textContent = '◎ Refresh';
+    } else {
+      locateBtnLabel.textContent = lastUserPos ? 'Locate again · Near plants' : 'Locate me · Near plants';
+      mapLocateBtn.textContent = '◎ Near me';
+    }
+  }
+
+  function stopWatch(keepResults) {
+    if (watchId != null) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+    }
+    setWatchingUI(false);
+    locateBtn.disabled = false;
+    if (keepResults && lastUserPos) {
+      setLocateStatus('Live refresh stopped. Last position and Near me list kept — tap Locate again to resume.');
+    } else if (!lastUserPos) {
+      setLocateStatus('Uses your phone GPS (HTTPS). Finds observations within 5 m, 20 m, and 50 m.');
+    }
+  }
 
   function setLocateStatus(msg, isErr) {
     locateStatus.textContent = msg;
@@ -541,19 +572,16 @@
     );
 
     setLocateStatus(
-      `Location locked (±${Math.round(accuracy)} m). Showing plants within 5 / 20 / 50 m. Tap again to refresh.`
+      `Live GPS on (±${Math.round(accuracy)} m). Showing plants within 5 / 20 / 50 m. Tap Stop refresh to freeze.`
     );
     locateBtn.disabled = false;
-    locateBtn.classList.add('watching');
-    locateBtnLabel.textContent = 'Refresh location';
-    mapLocateBtn.textContent = '◎ Refresh';
+    setWatchingUI(true);
   }
 
   function onGeoError(err) {
     locateBtn.disabled = false;
-    locateBtn.classList.remove('watching');
-    locateBtnLabel.textContent = 'Locate me · Near plants';
-    mapLocateBtn.textContent = '◎ Near me';
+    // Keep watch if already running; only reset labels if no watch
+    if (watchId == null) setWatchingUI(false);
     let msg = 'Could not read GPS.';
     if (err && err.code === 1) msg = 'Location permission denied. Enable location for this site in your phone browser.';
     else if (err && err.code === 2) msg = 'Position unavailable. Try again outdoors with GPS on.';
@@ -604,6 +632,8 @@
 
   locateBtn.addEventListener('click', startLocate);
   mapLocateBtn.addEventListener('click', startLocate);
+  stopLocateBtn.addEventListener('click', () => stopWatch(true));
+  mapStopBtn.addEventListener('click', () => stopWatch(true));
 
   refreshLayers();
 })().catch((err) => {
