@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Tai Po Kau — Plants map (November flowering)</title>
-  <meta name="description" content="Concrete-location iNaturalist plant observations in Tai Po Kau Nature Reserve, Hong Kong, with Flora of Hong Kong November phenology." />
+  <meta name="description" content="Concrete-location iNaturalist plant observations in Tai Po Kau Nature Reserve, Hong Kong, with Flora of Hong Kong November phenology. Near-me GPS search." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -21,6 +21,22 @@
         <h1>Plant observations map</h1>
         <p class="brand-sub">Concrete (non-obscured) iNaturalist locations · FoHK November phenology · early Nov 2026</p>
       </header>
+
+      <section class="near-me" id="near-me">
+        <h2>Near me (GPS)</h2>
+        <button type="button" id="locate-btn" class="btn-locate">
+          <span class="btn-locate-icon" aria-hidden="true">◎</span>
+          <span id="locate-btn-label">Locate me · Near plants</span>
+        </button>
+        <p id="locate-status" class="locate-status" role="status">Uses your phone GPS (HTTPS). Finds observations within 5 m, 20 m, and 50 m.</p>
+        <div class="radius-filters" id="radius-filters" hidden>
+          <button type="button" class="radius-chip active" data-radius="5">≤ 5 m</button>
+          <button type="button" class="radius-chip active" data-radius="20">≤ 20 m</button>
+          <button type="button" class="radius-chip active" data-radius="50">≤ 50 m</button>
+        </div>
+        <div class="near-summary" id="near-summary" hidden></div>
+        <div class="near-results" id="near-results" hidden></div>
+      </section>
 
       <section class="dashboard" id="dashboard">
         <div class="stat-grid">
@@ -49,7 +65,7 @@
 
       <section class="info" id="info-pane">
         <h2>Species info</h2>
-        <div id="info-empty" class="info-empty">Click a map point or pick a species from search to see FoHK flowering, assessment, and example observations.</div>
+        <div id="info-empty" class="info-empty">Click a map point, a Near me result, or pick a species from search to see FoHK flowering, assessment, and example observations.</div>
         <div id="info-body" hidden></div>
       </section>
 
@@ -60,6 +76,7 @@
     </aside>
     <main id="map-wrap">
       <div id="map"></div>
+      <button type="button" id="map-locate-btn" class="map-locate-fab" title="Locate me" aria-label="Locate me and find nearby plants">◎ Near me</button>
       <div class="map-legend" id="map-legend"></div>
     </main>
   </div>
